@@ -1,0 +1,36 @@
+﻿@using CzechMapGame.Shared
+@inject NavigationManager NavMan
+@inject MapState MapState
+
+@page "/question/{areaName}"
+
+<h4>@SelectedArea.Name</h4>
+
+<h3>Otázka za @SelectedArea.Points bodů</h3>
+
+<h1>@SelectedArea.Question</h1>
+
+<button onclick="@((Action<EventArgs>) ((args) => RedirectBack(true)))">Správně</button>
+<button onclick="@((Action<EventArgs>) ((args) => RedirectBack(false)))">Špatně</button>
+
+<i>@SelectedArea.Answer</i>
+
+@code{
+
+    [Parameter] public string AreaName { get; set; }
+
+    private Area SelectedArea { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        SelectedArea = MapState.Areas.Single(a => a.Name == AreaName);
+    }
+    
+    private void RedirectBack(bool solved)
+    {
+        SelectedArea.Solved = solved;
+
+        NavMan.NavigateTo($"/");
+    }
+
+}

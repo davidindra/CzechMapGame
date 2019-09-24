@@ -1,3 +1,4 @@
+using CzechMapGame.Shared;
 using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,6 +8,7 @@ namespace CzechMapGame.Client
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(s => new MapState());
         }
 
         public void Configure(IComponentsApplicationBuilder app)

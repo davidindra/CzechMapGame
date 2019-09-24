@@ -1,7 +1,47 @@
-﻿@page "/"
+﻿@using CzechMapGame.Shared
+@inject NavigationManager NavMan
+@inject MapState MapState
 
-<h1>Hello, world!</h1>
+@page "/"
 
-Welcome to your new app.
+<div id="map-container">
+    <svg id="czechia" class="map" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 215 120">
+        <g>
+            @foreach (var area in MapState.Areas)
+            {
+                <path
+                    class="area @area.Type.ToString().ToLower() @CssClassSolved(area) @CssClassHasQuestion(area)"
+                    d="@area.SvgCoords"
+                    onclick="@((Action<EventArgs>) ((args) => RedirectToQuestion(area)))"
+                    fill="@area.DefaultCssColor"/>
+            }
+        </g>
+    </svg></div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code{
+
+    private void RedirectToQuestion(Area area)
+    {
+        if(area.Question != null)
+            NavMan.NavigateTo($"/question/{area.Name}");
+    }
+
+    private static string CssClassSolved(Area area)
+    {
+        switch (area.Solved)
+        {
+            case true:
+                return "success";
+            case false:
+                return "failed";
+            default:
+                return "not-attempted";
+        }
+    }
+
+    private static string CssClassHasQuestion(Area area)
+    {
+        return area.Question == null ? "no-question" : "has-question";
+    }
+
+}

@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -5,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
 using System.Linq;
+using Microsoft.Extensions.FileProviders;
 
 namespace CzechMapGame.Server
 {
@@ -33,15 +35,41 @@ namespace CzechMapGame.Server
                 app.UseBlazorDebugging();
             }
 
-            app.UseClientSideBlazorFiles<Client.Startup>();
 
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
+            const string ClientProjectId = "CzechMapGame.Client";
+            var publishFolder = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/_content/{ClientProjectId}");
+            if (Directory.Exists(publishFolder))
+            {
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    RequestPath = "",
+                    FileProvider = new PhysicalFileProvider(publishFolder)
+                });
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapDefaultControllerRoute();
+                    endpoints.MapFallbackToClientSideBlazor<Client.Startup>($"_content/{ClientProjectId}/index.html");
+                });
+            }
+            else
+            {
+
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapDefaultControllerRoute();
+                    endpoints.MapFallbackToClientSideBlazor<Client.Startup>("index.html");
+                });
+            }
+
+            app.UseClientSideBlazorFiles<Client.Startup>();
+
+            /*app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapFallbackToClientSideBlazor<Client.Startup>("index.html");
-            });
+            });*/
         }
     }
 }
