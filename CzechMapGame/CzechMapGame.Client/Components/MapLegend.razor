@@ -1,0 +1,21 @@
+﻿@using CzechMapGame.Shared
+
+@inject MapState MapState
+
+<div class="legend-container">
+    
+    @foreach (var area in MapState.Areas.Where(a => a.Question != null).OrderBy(a => a.Points))
+    {
+        <div class="legend-row @AnsweredCssClass(area)">
+            <div class="legend-circle" style="background-color: @area.DefaultCssColor">&nbsp;</div>
+            <div class="legend-description">@area.Points bodů</div>
+        </div>
+    }
+</div>
+
+@code {
+    private static string AnsweredCssClass(Area area)
+    {
+        return area.Solved != null ? "answered" : "";
+    }
+}

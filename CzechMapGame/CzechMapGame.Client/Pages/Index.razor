@@ -1,4 +1,5 @@
 ﻿@using CzechMapGame.Shared
+@using CzechMapGame.Client.Components
 @inject NavigationManager NavMan
 @inject MapState MapState
 
@@ -16,7 +17,10 @@
                     fill="@area.DefaultCssColor"/>
             }
         </g>
-    </svg></div>
+    </svg>
+</div>
+
+<MapLegend/>
 
 @code{
 

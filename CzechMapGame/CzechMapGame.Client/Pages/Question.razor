@@ -4,11 +4,21 @@
 
 @page "/question/{areaName}"
 
-<h4>@SelectedArea.Name</h4>
+<h1>@SelectedArea.Name</h1>
 
-<h3>Otázka za @SelectedArea.Points bodů</h3>
+@*<h3>Otázka za @SelectedArea.Points bodů</h3>*@
 
-<h1>@SelectedArea.Question</h1>
+<h2>@SelectedArea.Question</h2>
+
+@if (answerIsShown)
+{
+    <h1 id="answer">@SelectedArea.Answer</h1>
+}
+else
+{
+    <button onclick="@((Action<EventArgs>)((args) => ShowAnswer()))" class="answer-button">Zobrazit odpověď</button>
+}
+<br/>
 
 <button onclick="@((Action<EventArgs>) ((args) => RedirectBack(true)))">Správně</button>
 <button onclick="@((Action<EventArgs>) ((args) => RedirectBack(false)))">Špatně</button>
@@ -16,6 +26,8 @@
 <i>@SelectedArea.Answer</i>
 
 @code{
+
+    private bool answerIsShown;
 
     [Parameter] public string AreaName { get; set; }
 
@@ -25,10 +37,17 @@
     {
         SelectedArea = MapState.Areas.Single(a => a.Name == AreaName);
     }
-    
+
+    private void ShowAnswer()
+    {
+        answerIsShown = true;
+    }
+
     private void RedirectBack(bool solved)
     {
         SelectedArea.Solved = solved;
+        Console.WriteLine($"set .Solved to {solved}");
+        StateHasChanged();
 
         NavMan.NavigateTo($"/");
     }
